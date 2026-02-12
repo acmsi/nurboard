@@ -25,7 +25,15 @@ deno install
 info "Building..."
 deno task build
 
-info "Restarting service..."
-sudo systemctl restart nurboard
+info "Updating systemd units..."
+CURRENT_USER="$(whoami)"
+for unit in nurboard.service nurboard-kiosk.service; do
+  sed "s/__USER__/$CURRENT_USER/g" "$INSTALL_DIR/systemd/$unit" \
+    | sudo tee "/etc/systemd/system/$unit" > /dev/null
+done
+sudo systemctl daemon-reload
 
-info "Done! Check status with: sudo systemctl status nurboard"
+info "Restarting services..."
+sudo systemctl restart nurboard nurboard-kiosk
+
+info "Done! Check status with: sudo systemctl status nurboard nurboard-kiosk"

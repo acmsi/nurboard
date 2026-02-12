@@ -12,6 +12,8 @@ RestartSec=5
 Environment=CEC_ENABLED=true
 Environment=TV_ON_HOUR=5
 Environment=TV_OFF_HOUR=23
+Environment=CDP_PORT=9222
+Environment=TAB_ROTATION_SECS=300
 
 [Install]
 WantedBy=multi-user.target

@@ -6,9 +6,12 @@ TV.
 
 ## What it does
 
-- Displays prayer times via [Mawaqit](https://mawaqit.net) in a fullscreen kiosk
+- Displays prayer times via [Mawaqit](https://mawaqit.net) as a full-screen
+  Chrome tab (managed via Chrome DevTools Protocol)
+- Rotates between Mawaqit and a local dashboard tab (announcements, events —
+  future)
 - Controls the TV power schedule via HDMI-CEC (auto on/off around prayer times)
-- Serves a local web dashboard on `localhost:3000`
+- Exposes REST APIs for tab switching (`/api/tabs`) and TV control (`/api/cec`)
 
 ## Quick install (Raspberry Pi)
 
@@ -36,18 +39,22 @@ See [docs/pi-setup.md](docs/pi-setup.md) for the full setup guide.
 /opt/nurboard/scripts/update.sh
 ```
 
-Pulls latest code, rebuilds, and restarts the service.
+Pulls latest code, rebuilds, updates systemd units, and restarts both services.
 
 ## Architecture
 
-A single Deno process handles both the Astro web dashboard and the CEC TV
-scheduler. Chrome runs in kiosk mode as a separate systemd service pointing at
-`localhost:3000`.
+A single Deno process handles the Astro web dashboard, CEC TV scheduler, and CDP
+tab rotation. Chrome runs in kiosk mode as a separate systemd service. The Deno
+service connects to Chrome's CDP port (`--remote-debugging-port=9222`) to manage
+tabs — this bypasses `X-Frame-Options` restrictions that prevent embedding
+Mawaqit in an iframe.
 
 ```
 Raspberry Pi 5 (4GB)
-├── nurboard.service      Deno — web dashboard + CEC scheduler
-├── nurboard-kiosk.service  Chrome kiosk → localhost:3000
+├── nurboard.service         Deno — dashboard + CEC scheduler + tab rotator
+├── nurboard-kiosk.service   Chrome kiosk (CDP :9222) → localhost:3000
+│   ├── Tab: localhost:3000    (dashboard)
+│   └── Tab: mawaqit.net      (prayer times)
 └── HDMI-CEC → Panasonic TX-50JXW834
 ```
 
@@ -66,7 +73,8 @@ deno task start     # run production server
 
 - [Deno](https://deno.land) runtime
 - [Astro](https://astro.build) (SSR, `@astrojs/node` adapter)
-- [Mawaqit](https://mawaqit.net) prayer times widget
+- [Mawaqit](https://mawaqit.net) prayer times (full page via CDP tab control)
+- Chrome DevTools Protocol (CDP) for tab management
 - HDMI-CEC via `cec-client` (`cec-utils`)
 - systemd for process management
 

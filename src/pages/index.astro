@@ -3,20 +3,32 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="Nurboard">
-  <iframe
-    src="https://mawaqit.net/fr/mosquee-nur-2610-saint-imier-switzerland"
-    title="Mawaqit"
-    class="mawaqit-frame"
-  ></iframe>
+  <main class="dashboard">
+    <h1>Mosquee Nur</h1>
+    <p class="subtitle">Saint-Imier</p>
+  </main>
 </Layout>
 
 <style>
-  .mawaqit-frame {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
+  .dashboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     height: 100vh;
-    border: none;
+    color: #fff;
+    font-family: system-ui, sans-serif;
+  }
+
+  h1 {
+    font-size: 4rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+  }
+
+  .subtitle {
+    font-size: 1.5rem;
+    opacity: 0.6;
+    margin-top: 0.5rem;
   }
 </style>

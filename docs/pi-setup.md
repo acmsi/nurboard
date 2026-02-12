@@ -72,8 +72,8 @@ For day-to-day code updates via SSH:
 /opt/nurboard/scripts/update.sh
 ```
 
-This pulls the latest code, rebuilds, and restarts the nurboard service. The
-kiosk Chrome will automatically reconnect.
+This pulls the latest code, rebuilds, reinstalls systemd units, and restarts
+both services. The tab rotator will reconnect to Chrome via CDP automatically.
 
 ## Troubleshooting
 
@@ -108,6 +108,21 @@ echo "on 0" | cec-client -s -d 1
 
 # Put TV in standby
 echo "standby 0" | cec-client -s -d 1
+```
+
+### Test tab control (CDP)
+
+```bash
+# Check tab status
+curl localhost:3000/api/tabs
+
+# Switch to the dashboard tab
+curl -X POST localhost:3000/api/tabs -H 'Content-Type: application/json' \
+  -d '{"action":"show","tab":"dashboard"}'
+
+# Switch to the Mawaqit tab
+curl -X POST localhost:3000/api/tabs -H 'Content-Type: application/json' \
+  -d '{"action":"show","tab":"mawaqit"}'
 ```
 
 ### Restart services

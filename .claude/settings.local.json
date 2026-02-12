@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "WebFetch(domain:help.mawaqit.net)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(deno fmt:*)",
+      "Bash(deno lint:*)",
+      "Bash(deno task build:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
