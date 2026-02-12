@@ -4,9 +4,9 @@ After=network.target
 
 [Service]
 Type=simple
-User=pi
-WorkingDirectory=/home/pi/nurboard
-ExecStart=/home/pi/.deno/bin/deno run -A main.ts
+User=__USER__
+WorkingDirectory=/opt/nurboard
+ExecStart=/home/__USER__/.deno/bin/deno run -A main.ts
 Restart=always
 RestartSec=5
 Environment=CEC_ENABLED=true
