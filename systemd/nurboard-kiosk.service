@@ -1,0 +1,16 @@
+[Unit]
+Description=Nurboard Chrome Kiosk
+After=nurboard.service graphical.target
+Wants=nurboard.service
+
+[Service]
+Type=simple
+User=pi
+Environment=DISPLAY=:0
+ExecStartPre=/bin/sleep 3
+ExecStart=/usr/bin/chromium-browser --kiosk --noerrdialogs --disable-infobars --no-first-run --disable-translate --disable-features=TranslateUI --autoplay-policy=no-user-gesture-required http://localhost:3000
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=graphical.target

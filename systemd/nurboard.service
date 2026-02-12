@@ -1,0 +1,17 @@
+[Unit]
+Description=Nurboard Dashboard Service
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/nurboard
+ExecStart=/home/pi/.deno/bin/deno run -A main.ts
+Restart=always
+RestartSec=5
+Environment=CEC_ENABLED=true
+Environment=TV_ON_HOUR=5
+Environment=TV_OFF_HOUR=23
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,16 @@
+{
+  "tasks": {
+    "dev": "deno run -A npm:astro dev",
+    "build": "deno run -A npm:astro build",
+    "start": "deno run -A main.ts"
+  },
+  "nodeModulesDir": "auto",
+  "imports": {
+    "path": "node:path",
+    "tty": "node:tty",
+    "util": "node:util",
+    "crypto": "node:crypto",
+    "fs": "node:fs",
+    "stream": "node:stream"
+  }
+}
