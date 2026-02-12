@@ -26,13 +26,21 @@ sudo apt-get update -qq
 sudo apt-get install -y -qq cec-utils chromium git
 
 # ── Deno ───────────────────────────────────────────────────────────────
+export DENO_INSTALL="$HOME/.deno"
+export PATH="$DENO_INSTALL/bin:$PATH"
+
 if ! command -v deno &>/dev/null; then
   info "Installing Deno..."
   curl -fsSL https://deno.land/install.sh | sh
-  export DENO_INSTALL="$HOME/.deno"
-  export PATH="$DENO_INSTALL/bin:$PATH"
 else
   info "Deno already installed: $(deno --version | head -1)"
+fi
+
+# Persist Deno in PATH for future shell sessions
+DENO_PATH_LINE='export DENO_INSTALL="$HOME/.deno" && export PATH="$DENO_INSTALL/bin:$PATH"'
+if ! grep -q '.deno/bin' "$HOME/.bashrc" 2>/dev/null; then
+  echo "$DENO_PATH_LINE" >> "$HOME/.bashrc"
+  info "Added Deno to ~/.bashrc"
 fi
 
 # ── Clone or update repo ──────────────────────────────────────────────

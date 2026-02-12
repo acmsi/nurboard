@@ -7,6 +7,9 @@
 
 set -euo pipefail
 
+export DENO_INSTALL="$HOME/.deno"
+export PATH="$DENO_INSTALL/bin:$PATH"
+
 INSTALL_DIR="/opt/nurboard"
 
 info() { echo "[nurboard] $*"; }
