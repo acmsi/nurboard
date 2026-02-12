@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { tvOn, tvOff, tvStatus } from "../../lib/cec.ts";
+import { tvOff, tvOn, tvStatus } from "../../lib/cec.ts";
 
 export const GET: APIRoute = async () => {
   const status = await tvStatus();

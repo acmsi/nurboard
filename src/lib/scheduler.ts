@@ -1,7 +1,7 @@
-import { tvOn, tvOff } from "./cec.ts";
+import { tvOff, tvOn } from "./cec.ts";
 
-const TV_ON_HOUR = parseInt(process.env.TV_ON_HOUR ?? "5", 10);
-const TV_OFF_HOUR = parseInt(process.env.TV_OFF_HOUR ?? "23", 10);
+const TV_ON_HOUR = parseInt(Deno.env.get("TV_ON_HOUR") ?? "5", 10);
+const TV_OFF_HOUR = parseInt(Deno.env.get("TV_OFF_HOUR") ?? "23", 10);
 
 let interval: ReturnType<typeof setInterval> | null = null;
 let lastAction: "on" | "off" | null = null;

@@ -11,7 +11,8 @@ Complete guide for setting up the nurboard kiosk on a Raspberry Pi 5.
 
 ## 1. HDMI Configuration
 
-Force 1080p HDMI output by editing `/boot/firmware/config.txt`. See [rpi-boot-config.md](rpi-boot-config.md) for the required settings.
+Force 1080p HDMI output by editing `/boot/firmware/config.txt`. See
+[rpi-boot-config.md](rpi-boot-config.md) for the required settings.
 
 Reboot after editing.
 
@@ -71,7 +72,8 @@ For day-to-day code updates via SSH:
 /opt/nurboard/scripts/update.sh
 ```
 
-This pulls the latest code, rebuilds, and restarts the nurboard service. The kiosk Chrome will automatically reconnect.
+This pulls the latest code, rebuilds, and restarts the nurboard service. The
+kiosk Chrome will automatically reconnect.
 
 ## Troubleshooting
 

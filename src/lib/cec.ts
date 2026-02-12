@@ -3,7 +3,7 @@ import { promisify } from "node:util";
 
 const execAsync = promisify(exec);
 
-const CEC_ENABLED = process.env.CEC_ENABLED !== "false";
+const CEC_ENABLED = Deno.env.get("CEC_ENABLED") !== "false";
 
 async function cecSend(command: string): Promise<string> {
   if (!CEC_ENABLED) {

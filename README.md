@@ -1,6 +1,8 @@
 # Nurboard
 
-Dashboard and kiosk system for the [Nur Mosque](https://acmsi.ch) in Saint-Imier, Switzerland. Runs on a Raspberry Pi 5 connected via HDMI to a 50" TV.
+Dashboard and kiosk system for the [Nur Mosque](https://acmsi.ch) in
+Saint-Imier, Switzerland. Runs on a Raspberry Pi 5 connected via HDMI to a 50"
+TV.
 
 ## What it does
 
@@ -23,7 +25,8 @@ git clone https://github.com/acmsi/nurboard.git /opt/nurboard
 /opt/nurboard/scripts/install.sh
 ```
 
-The install script is idempotent (safe to re-run). It installs Deno, system dependencies, builds the dashboard, and configures systemd services.
+The install script is idempotent (safe to re-run). It installs Deno, system
+dependencies, builds the dashboard, and configures systemd services.
 
 See [docs/pi-setup.md](docs/pi-setup.md) for the full setup guide.
 
@@ -37,7 +40,9 @@ Pulls latest code, rebuilds, and restarts the service.
 
 ## Architecture
 
-A single Deno process handles both the Astro web dashboard and the CEC TV scheduler. Chrome runs in kiosk mode as a separate systemd service pointing at `localhost:3000`.
+A single Deno process handles both the Astro web dashboard and the CEC TV
+scheduler. Chrome runs in kiosk mode as a separate systemd service pointing at
+`localhost:3000`.
 
 ```
 Raspberry Pi 5 (4GB)
@@ -67,4 +72,5 @@ deno task start     # run production server
 
 ## License
 
-Private project of [ACMSI](https://acmsi.ch) (Association Culturelle Musulmane de Saint-Imier).
+Private project of [ACMSI](https://acmsi.ch) (Association Culturelle Musulmane
+de Saint-Imier).
