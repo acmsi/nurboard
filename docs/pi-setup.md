@@ -40,7 +40,51 @@ The script is idempotent — safe to run multiple times. It will:
 - Install and enable systemd services
 - Disable screen blanking (DPMS + console)
 
-## 3. Manual Steps
+## 3. Remote Access (Tailscale)
+
+Tailscale is installed automatically by `install.sh`. It creates a mesh VPN so
+you can SSH into the Pi from anywhere, even behind NAT.
+
+### One-time setup
+
+```bash
+sudo tailscale up --ssh
+```
+
+This prints a URL — open it in a browser to authenticate with your Tailscale
+account. Once authenticated, the Pi joins your tailnet and is reachable via its
+Tailscale IP (`100.x.y.z`) or MagicDNS hostname.
+
+### Usage
+
+From any device on the same tailnet:
+
+```bash
+# SSH (no key management needed with --ssh)
+ssh nasiridina@nurboard-pi
+
+# Dashboard
+curl http://nurboard-pi:3000/api/tabs
+
+# Or use the Tailscale IP directly
+ssh nasiridina@100.x.y.z
+```
+
+Tailscale runs as a systemd service and survives reboots automatically.
+
+The free plan (3 users, 100 devices) covers this use case. Tailscale is built on
+WireGuard, so if we ever need to eliminate the third-party dependency,
+[Headscale](https://github.com/juanfont/headscale) is a self-hosted drop-in
+replacement for the coordination server.
+
+### Verify
+
+```bash
+tailscale status     # show tailnet peers
+tailscale ip         # show this device's Tailscale IP
+```
+
+## 4. Manual Steps
 
 After `install.sh` completes, configure these via `sudo raspi-config`:
 

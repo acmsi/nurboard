@@ -25,8 +25,8 @@ Association website: https://acmsi.ch
 
 The 4GB Pi at the mosque runs everything locally and is fully self-contained. A
 separate homeserver Pi (8GB, different location) running Coolify is used only
-for remote access via Wireguard/Cloudflared — the nurboard Pi must work
-regardless of internet or homeserver availability.
+for remote access via Tailscale — the nurboard Pi must work regardless of
+internet or homeserver availability.
 
 ### Single Deno service
 
@@ -56,8 +56,7 @@ transition.
 
 ### Deployment
 
-Git pull + systemd restart via SSH or Wireguard tunnel. No CI/CD pipeline
-initially.
+Git pull + systemd restart via SSH over Tailscale. No CI/CD pipeline initially.
 
 ```
 ┌───────────────────────────────────────────────────┐
@@ -89,7 +88,8 @@ initially.
   1920x1080
 - **TV Control**: HDMI-CEC via `cec-client` ("VIERA Link" on this Panasonic TV)
 - **Tab Control**: Chrome DevTools Protocol (CDP) JSON API on port 9222
-- **Remote Access**: Cloudflared tunnel (planned), SSH, Rustdesk/VNC
+- **Remote Access**: Tailscale (mesh VPN, SSH via tailnet), Cloudflared
+  (planned, for public dashboard access)
 
 ## Hardware & CEC Commands
 

@@ -76,6 +76,7 @@ deno task start     # run production server
 - [Mawaqit](https://mawaqit.net) prayer times (full page via CDP tab control)
 - Chrome DevTools Protocol (CDP) for tab management
 - HDMI-CEC via `cec-client` (`cec-utils`)
+- [Tailscale](https://tailscale.com) for remote access (SSH over mesh VPN)
 - systemd for process management
 
 ## License

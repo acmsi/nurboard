@@ -43,6 +43,14 @@ if ! grep -q '.deno/bin' "$HOME/.bashrc" 2>/dev/null; then
   info "Added Deno to ~/.bashrc"
 fi
 
+# ── Tailscale (remote access) ─────────────────────────────────────
+if ! command -v tailscale &>/dev/null; then
+  info "Installing Tailscale..."
+  curl -fsSL https://tailscale.com/install.sh | sh
+else
+  info "Tailscale already installed: $(tailscale version)"
+fi
+
 # ── Clone or update repo ──────────────────────────────────────────────
 if [ -d "$INSTALL_DIR/.git" ]; then
   info "Updating existing repo..."
@@ -105,4 +113,5 @@ info "Manual steps remaining:"
 info "  1. Enable auto-login to desktop: sudo raspi-config -> System -> Boot -> Desktop Autologin"
 info "  2. Configure Wi-Fi if needed: sudo raspi-config -> Network"
 info "  3. Enable SSH if needed: sudo raspi-config -> Interfaces -> SSH"
-info "  4. Reboot to apply all changes: sudo reboot"
+info "  4. Set up Tailscale: sudo tailscale up --ssh (then authenticate in browser)"
+info "  5. Reboot to apply all changes: sudo reboot"
