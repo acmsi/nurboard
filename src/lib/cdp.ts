@@ -28,7 +28,7 @@ export async function listTabs(): Promise<CdpTab[]> {
 }
 
 export async function createTab(url: string): Promise<CdpTab> {
-  const res = await cdpFetch(`/json/new?${url}`);
+  const res = await fetch(`${CDP_BASE}/json/new?${url}`, { method: "PUT" });
   return await res.json();
 }
 

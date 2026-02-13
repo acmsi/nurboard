@@ -53,11 +53,21 @@ async function setupTabs(): Promise<void> {
       console.log(`[tab-rotator] reusing tab "${managed.name}": ${match.id}`);
       managed.targetId = match.id;
     } else {
-      console.log(
-        `[tab-rotator] creating tab "${managed.name}": ${managed.url}`,
-      );
-      const tab = await createTab(managed.url);
-      managed.targetId = tab.id;
+      try {
+        console.log(
+          `[tab-rotator] creating tab "${managed.name}": ${managed.url}`,
+        );
+        const tab = await createTab(managed.url);
+        managed.targetId = tab.id;
+        console.log(
+          `[tab-rotator] created tab "${managed.name}": ${tab.id}`,
+        );
+      } catch (err) {
+        console.error(
+          `[tab-rotator] failed to create tab "${managed.name}":`,
+          err,
+        );
+      }
     }
   }
 
