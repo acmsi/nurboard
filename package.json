@@ -3,6 +3,8 @@
   "type": "module",
   "dependencies": {
     "astro": "^5",
-    "@astrojs/node": "^9"
+    "@astrojs/node": "^9",
+    "tailwindcss": "^4",
+    "@tailwindcss/vite": "^4"
   }
 }

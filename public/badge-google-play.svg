@@ -1,0 +1,35 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 120 40"
+  width="120"
+  height="40"
+>
+  <rect width="120" height="40" rx="5" fill="#000" />
+  <rect
+    x=".5"
+    y=".5"
+    width="119"
+    height="39"
+    rx="4.5"
+    fill="none"
+    stroke="#a6a6a6"
+  />
+  <!-- Play triangle -->
+  <g transform="translate(8,8)">
+    <path fill="#4285F4" d="M3 1.5l10 8.5-10 8.5z" opacity=".9" />
+    <path fill="#34A853" d="M3 18.5l7-5.5 3 2.5z" opacity=".9" />
+    <path fill="#FBBC04" d="M3 1.5l7 5.5 3-2.5z" opacity=".9" />
+    <path fill="#EA4335" d="M13 10l-3-2.5L3 1.5 13 10z" opacity=".5" />
+  </g>
+  <!-- Text -->
+  <text fill="#fff" font-family="sans-serif" font-size="7" x="30" y="15"
+  >GET IT ON</text>
+  <text
+    fill="#fff"
+    font-family="sans-serif"
+    font-weight="bold"
+    font-size="12"
+    x="30"
+    y="29"
+  >Google Play</text>
+</svg>

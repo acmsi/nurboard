@@ -1,34 +1,245 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { fetchDonationData } from "../lib/donation";
+
+const mawaqitUrl =
+  "https://mawaqit.net/fr/m/mosquée-nur-2610-saint-imier-switzerland?showNotification=0&showSearchButton=0&showFooter=0&showFlashMessage=0&view=mobile";
+
+const donation = await fetchDonationData();
+const donationCurrent = donation.montant_leve;
+const donationGoal = donation.objectif;
+const donationPercent = donation.pourcentage;
+const donationUpdated = new Date(donation.derniere_maj).toLocaleDateString(
+  "fr-CH",
+  { day: "numeric", month: "long", year: "numeric" },
+);
 ---
 
 <Layout title="Nurboard">
-  <main class="dashboard">
-    <h1>Mosquee Nur</h1>
-    <p class="subtitle">Saint-Imier</p>
+  <main class="flex h-screen">
+    <!-- Left: Mawaqit prayer times widget + app promo overlay -->
+    <aside class="w-[515px] shrink-0 relative">
+      <iframe
+        src={mawaqitUrl}
+        title="Horaires de prière - Mawaqit"
+        class="w-full h-full border-0"
+        loading="eager"
+        sandbox="allow-scripts allow-same-origin"></iframe>
+      <!-- Mawaqit app promo (overlaid at bottom) -->
+      <div
+        class="absolute bottom-0 inset-x-0 flex items-center justify-center gap-6 px-8 py-5 bg-black/80 backdrop-blur-md"
+      >
+        <img
+          src="/qr-mawaqit-app.png"
+          alt="QR code application Mawaqit"
+          class="w-32 h-32 rounded-lg"
+        />
+        <div class="flex flex-col gap-3">
+          <p class="text-white text-xl font-medium">
+            Horaires sur votre téléphone
+          </p>
+          <img
+            src="/badge-app-store.svg"
+            alt="Download on the App Store"
+            class="h-10"
+          />
+          <img
+            src="/badge-google-play.svg"
+            alt="Get it on Google Play"
+            class="h-10"
+          />
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right: Dashboard content -->
+    <section
+      class="flex-1 flex flex-col text-white px-10 py-6 overflow-hidden gap-8 relative bg-nur-teal-950"
+    >
+      <div
+        class="absolute inset-0 islamic-pattern pointer-events-none"
+        style="--pattern-background-color: var(--color-nur-teal-950); --pattern-foreground-color: #0a3d3a; mask-image: linear-gradient(to bottom, black 20%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 20%, transparent 100%);"
+      >
+      </div>
+      <!-- Header -->
+      <header class="text-center relative z-10">
+        <h1 class="font-headings text-7xl font-bold text-nur-cream-200">
+          Mosquée Nur
+        </h1>
+        <p class="text-3xl text-nur-teal-300 mt-2">
+          Association Culturelle Musulmane de Saint-Imier
+        </p>
+      </header>
+
+      <!-- Cards -->
+      <div class="flex-1 flex flex-col gap-5 justify-center relative z-10">
+        <!-- Membership CTA -->
+        <div
+          class="bg-nur-teal-900/60 backdrop-blur-md rounded-2xl p-8 flex gap-8 items-center"
+        >
+          <div class="flex-1">
+            <h2
+              class="font-headings text-5xl font-bold text-nur-gold-400 mb-3"
+            >
+              Rejoignez l'ACMSI
+            </h2>
+            <p class="text-3xl text-nur-cream-200 mb-2">
+              Cotisation annuelle&nbsp;: <strong class="text-white"
+                >360 CHF</strong
+              > minimum par foyer
+            </p>
+            <p class="text-3xl text-nur-teal-200">
+              Garantissez la pérennité de votre mosquée en devenant membre
+            </p>
+          </div>
+          <div class="shrink-0 flex flex-col items-center gap-1">
+            <div class="bg-white rounded-2xl overflow-hidden">
+              <img
+                src="/qr-adhesion.svg"
+                alt="QR code adhésion ACMSI"
+                class="w-52 h-52"
+              />
+            </div>
+            <span class="text-base text-nur-teal-400">acmsi.ch/donation</span>
+          </div>
+        </div>
+
+        <!-- Xhamia Nur Donation -->
+        <div
+          class="bg-nur-teal-900/60 backdrop-blur-md rounded-2xl p-8 flex gap-8 items-center"
+        >
+          <div class="flex-1">
+            <h2
+              class="font-headings text-5xl font-bold text-nur-gold-400 mb-3"
+            >
+              Projet Xhamia Nur
+            </h2>
+            <p class="text-3xl text-nur-cream-200 mb-4">
+              Aidez-nous à racheter notre mosquée
+            </p>
+            <!-- Progress bar -->
+            <div>
+              <div
+                class="w-full h-6 bg-nur-teal-800 rounded-full overflow-hidden"
+              >
+                <div
+                  class="h-full bg-nur-gold-500 rounded-full"
+                  style={`width: ${donationPercent}%`}
+                >
+                </div>
+              </div>
+              <div
+                class="flex justify-between text-3xl mt-2"
+              >
+                <span class="font-semibold text-nur-gold-400"
+                  >{donationCurrent.toLocaleString("fr-CH")} CHF collectés</span
+                >
+                <span class="text-nur-teal-200"
+                  >Objectif&nbsp;: {donationGoal.toLocaleString("fr-CH")} CHF</span
+                >
+              </div>
+              <p class="text-3xl text-nur-teal-300 mt-1">
+                {donationPercent.toLocaleString("fr-CH")}% de l'objectif &middot; mis à jour le {
+                  donationUpdated
+                }
+              </p>
+            </div>
+          </div>
+          <div class="shrink-0 flex flex-col items-center gap-1">
+            <div class="bg-white rounded-2xl overflow-hidden">
+              <img
+                src="/qr-xhamia-nur.svg"
+                alt="QR code don Xhamia Nur"
+                class="w-52 h-52"
+              />
+            </div>
+            <span class="text-base text-nur-teal-400"
+              >acmsi.ch/projet-xhamia-nur</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer: WhatsApp + acmsi.ch -->
+      <div
+        class="rounded-2xl p-5 flex items-start justify-center gap-16 relative z-10 shrink-0"
+      >
+        <div class="flex items-start gap-5">
+          <div class="shrink-0 bg-white rounded-2xl overflow-hidden">
+            <img
+              src="/qr-whatsapp.svg"
+              alt="QR code communauté WhatsApp"
+              class="w-40 h-40"
+            />
+          </div>
+          <div class="pt-2">
+            <p class="text-2xl text-nur-cream-200">Rejoignez-nous sur</p>
+            <p
+              class="text-4xl font-bold text-green-400 flex items-center gap-3"
+            >
+              <!-- WhatsApp icon -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="40"
+                height="40"
+                viewBox="0 0 256 256"
+                fill="currentColor"
+              >
+                <path
+                  d="M187.58,144.84l-32-16a8,8,0,0,0-8,.5l-14.69,9.8a40.55,40.55,0,0,1-16-16l9.8-14.69a8,8,0,0,0,.5-8l-16-32A8,8,0,0,0,104,64a40,40,0,0,0-40,40,88.1,88.1,0,0,0,88,88,40,40,0,0,0,40-40A8,8,0,0,0,187.58,144.84ZM152,176a72.08,72.08,0,0,1-72-72A24,24,0,0,1,99.29,80.46l11.48,23L101,118a8,8,0,0,0-.73,7.51,56.47,56.47,0,0,0,30.15,30.15A8,8,0,0,0,138,155l14.61-9.74,23,11.48A24,24,0,0,1,152,176ZM128,24A104,104,0,0,0,36.18,176.88L24.83,210.93a16,16,0,0,0,20.24,20.24l34.05-11.35A104,104,0,1,0,128,24Zm0,192a87.87,87.87,0,0,1-44.06-11.81,8,8,0,0,0-6.54-.67L40,216,52.47,178.6a8,8,0,0,0-.66-6.54A88,88,0,1,1,128,216Z"
+                ></path>
+              </svg>
+              WhatsApp
+            </p>
+          </div>
+        </div>
+        <div class="w-px self-stretch bg-nur-teal-700"></div>
+        <div class="flex items-start gap-5">
+          <div class="pt-2">
+            <p class="text-2xl text-nur-cream-200">Retrouvez-nous sur</p>
+            <p class="text-4xl font-bold text-nur-gold-400">acmsi.ch</p>
+            <div class="flex gap-3 mt-2 text-nur-teal-300">
+              <!-- Facebook icon -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="32"
+                height="32"
+                viewBox="0 0 256 256"
+                fill="currentColor"
+              >
+                <path
+                  d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm8,191.63V152h24a8,8,0,0,0,0-16H136V112a16,16,0,0,1,16-16h16a8,8,0,0,0,0-16H152a32,32,0,0,0-32,32v24H96a8,8,0,0,0,0,16h24v63.63a88,88,0,1,1,16,0Z"
+                ></path>
+              </svg>
+              <!-- Instagram icon -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="32"
+                height="32"
+                viewBox="0 0 256 256"
+                fill="currentColor"
+              >
+                <path
+                  d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160ZM176,24H80A56.06,56.06,0,0,0,24,80v96a56.06,56.06,0,0,0,56,56h96a56.06,56.06,0,0,0,56-56V80A56.06,56.06,0,0,0,176,24Zm40,152a40,40,0,0,1-40,40H80a40,40,0,0,1-40-40V80A40,40,0,0,1,80,40h96a40,40,0,0,1,40,40ZM192,76a12,12,0,1,1-12-12A12,12,0,0,1,192,76Z"
+                ></path>
+              </svg>
+            </div>
+          </div>
+          <div class="shrink-0 bg-white rounded-2xl overflow-hidden">
+            <img
+              src="/qr-acmsi.svg"
+              alt="QR code acmsi.ch"
+              class="w-40 h-40"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 </Layout>
 
 <style>
-  .dashboard {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    color: #fff;
-    font-family: system-ui, sans-serif;
-  }
-
-  h1 {
-    font-size: 4rem;
-    font-weight: 300;
-    letter-spacing: 0.05em;
-  }
-
-  .subtitle {
-    font-size: 1.5rem;
-    opacity: 0.6;
-    margin-top: 0.5rem;
+  .font-headings {
+    font-family: var(--font-family-headings);
   }
 </style>

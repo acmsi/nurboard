@@ -1,0 +1,18 @@
+/* Mada Font - Body Text (Variable Font) */
+@font-face {
+  font-family: "Mada";
+  src: url("/fonts/mada/Mada-Variable.woff2") format("woff2-variations");
+  font-weight: 200 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* El Messiri Font - Headings (Variable Font) */
+@font-face {
+  font-family: "El Messiri";
+  src: url("/fonts/el-messiri/ElMessiri-Variable.woff2")
+    format("woff2-variations");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}

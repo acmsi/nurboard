@@ -1,0 +1,120 @@
+/* Islamic geometric pattern utility */
+.islamic-pattern {
+  --pattern-background-color: #16a085;
+  --pattern-foreground-color: #d5d8dc;
+  --pattern-size: 250px;
+
+  background-color: var(--pattern-background-color);
+
+  background-image:
+    linear-gradient(
+      67.5deg,
+      var(--pattern-background-color) 10%,
+      transparent 10%
+    ),
+    linear-gradient(
+    157.5deg,
+    var(--pattern-background-color) 10%,
+    transparent 10%
+  ),
+    linear-gradient(
+    67.5deg,
+    transparent 90%,
+    var(--pattern-background-color) 90%
+  ),
+    linear-gradient(
+    157.5deg,
+    transparent 90%,
+    var(--pattern-background-color) 90%
+  ),
+    linear-gradient(
+    22.5deg,
+    var(--pattern-background-color) 10%,
+    transparent 10%
+  ),
+    linear-gradient(
+    112.5deg,
+    var(--pattern-background-color) 10%,
+    transparent 10%
+  ),
+    linear-gradient(
+    22.5deg,
+    transparent 90%,
+    var(--pattern-background-color) 90%
+  ),
+    linear-gradient(
+    112.5deg,
+    transparent 90%,
+    var(--pattern-background-color) 90%
+  ),
+    linear-gradient(
+    22.5deg,
+    transparent 33%,
+    var(--pattern-foreground-color) 33%,
+    var(--pattern-foreground-color) 36%,
+    transparent 36%,
+    transparent 64%,
+    var(--pattern-foreground-color) 64%,
+    var(--pattern-foreground-color) 67%,
+    transparent 67%
+  ),
+    linear-gradient(
+    -22.5deg,
+    transparent 33%,
+    var(--pattern-foreground-color) 33%,
+    var(--pattern-foreground-color) 36%,
+    transparent 36%,
+    transparent 64%,
+    var(--pattern-foreground-color) 64%,
+    var(--pattern-foreground-color) 67%,
+    transparent 67%
+  ),
+    linear-gradient(
+    112.5deg,
+    transparent 33%,
+    var(--pattern-foreground-color) 33%,
+    var(--pattern-foreground-color) 36%,
+    transparent 36%,
+    transparent 64%,
+    var(--pattern-foreground-color) 64%,
+    var(--pattern-foreground-color) 67%,
+    transparent 67%
+  ),
+    linear-gradient(
+    -112.5deg,
+    transparent 33%,
+    var(--pattern-foreground-color) 33%,
+    var(--pattern-foreground-color) 36%,
+    transparent 36%,
+    transparent 64%,
+    var(--pattern-foreground-color) 64%,
+    var(--pattern-foreground-color) 67%,
+    transparent 67%
+  );
+  background-size: var(--pattern-size) var(--pattern-size);
+  background-position:
+    calc(var(--pattern-size) * -0.4) calc(var(--pattern-size) * 0.6),
+    calc(var(--pattern-size) * -0.6) calc(var(--pattern-size) * 0.6),
+    calc(var(--pattern-size) * -0.6) calc(var(--pattern-size) * 0.4),
+    calc(var(--pattern-size) * -0.4) calc(var(--pattern-size) * 0.4),
+    calc(var(--pattern-size) * -0.6) calc(var(--pattern-size) * 0.4),
+    calc(var(--pattern-size) * -0.4) calc(var(--pattern-size) * 0.4),
+    calc(var(--pattern-size) * -0.4) calc(var(--pattern-size) * 0.6),
+    calc(var(--pattern-size) * -0.6) calc(var(--pattern-size) * 0.6),
+    0 0,
+    0 0,
+    0 0,
+    0 0;
+}
+
+/* Size variations */
+.islamic-pattern-sm {
+  --pattern-size: 168px; /* Half of the default 250px */
+}
+
+/* Responsive variants using media queries */
+@media (min-width: 768px) {
+  .md\:islamic-pattern-md {
+    --pattern-size: 200px;
+  }
+}

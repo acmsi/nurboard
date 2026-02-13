@@ -1,0 +1,47 @@
+@import "./fonts.css";
+@import "./islamic-pattern.css";
+@import "tailwindcss";
+
+@theme inline {
+  --font-family-sans:
+    Mada, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-family-headings:
+    "El Messiri", Mada, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+
+  --color-nur-teal-50: #f0fdfa;
+  --color-nur-teal-100: #ccfbf1;
+  --color-nur-teal-200: #99f6e4;
+  --color-nur-teal-300: #5eead4;
+  --color-nur-teal-400: #2dd4bf;
+  --color-nur-teal-500: #14b8a6;
+  --color-nur-teal-600: #0d9488;
+  --color-nur-teal-700: #0f766e;
+  --color-nur-teal-800: #115e59;
+  --color-nur-teal-900: #134e4a;
+  --color-nur-teal-950: #042f2e;
+
+  --color-nur-cream-50: #fefdfb;
+  --color-nur-cream-100: #fdf9f0;
+  --color-nur-cream-200: #faf0e0;
+  --color-nur-cream-300: #f5e4c1;
+  --color-nur-cream-400: #eed49f;
+  --color-nur-cream-500: #e4c078;
+  --color-nur-cream-600: #d4a855;
+  --color-nur-cream-700: #b88c42;
+  --color-nur-cream-800: #956f37;
+  --color-nur-cream-900: #795c30;
+  --color-nur-cream-950: #3f2f18;
+
+  --color-nur-gold-50: #fffbeb;
+  --color-nur-gold-100: #fef3c7;
+  --color-nur-gold-200: #fde68a;
+  --color-nur-gold-300: #fcd34d;
+  --color-nur-gold-400: #fbbf24;
+  --color-nur-gold-500: #f59e0b;
+  --color-nur-gold-600: #d97706;
+  --color-nur-gold-700: #b45309;
+  --color-nur-gold-800: #92400e;
+  --color-nur-gold-900: #78350f;
+  --color-nur-gold-950: #451a03;
+}
