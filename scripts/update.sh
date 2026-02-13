@@ -25,6 +25,11 @@ deno install
 info "Building..."
 deno task build
 
+info "Updating Chromium policies..."
+sudo mkdir -p /etc/chromium/policies/managed
+sudo cp "$INSTALL_DIR/chromium/policies/managed/nurboard.json" \
+  /etc/chromium/policies/managed/nurboard.json
+
 info "Updating systemd units..."
 CURRENT_USER="$(whoami)"
 for unit in nurboard.service nurboard-kiosk.service; do

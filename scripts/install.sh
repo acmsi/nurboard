@@ -71,6 +71,12 @@ sudo systemctl daemon-reload
 sudo systemctl enable nurboard.service nurboard-kiosk.service
 sudo systemctl restart nurboard.service nurboard-kiosk.service
 
+# ── Chromium policies ─────────────────────────────────────────────
+info "Installing Chromium policies..."
+sudo mkdir -p /etc/chromium/policies/managed
+sudo cp "$INSTALL_DIR/chromium/policies/managed/nurboard.json" \
+  /etc/chromium/policies/managed/nurboard.json
+
 # ── Disable screen blanking ───────────────────────────────────────────
 info "Disabling screen blanking..."
 
