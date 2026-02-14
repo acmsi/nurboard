@@ -31,7 +31,7 @@ let rotationInterval: ReturnType<typeof setInterval> | null = null;
 let retryTimeout: ReturnType<typeof setTimeout> | null = null;
 let connected = false;
 
-function urlMatches(tabUrl: string, targetUrl: string): boolean {
+export function urlMatches(tabUrl: string, targetUrl: string): boolean {
   // Chrome may add trailing slash or normalize the URL
   try {
     const a = new URL(tabUrl);

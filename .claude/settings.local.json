@@ -6,7 +6,8 @@
       "Bash(deno fmt:*)",
       "Bash(deno lint:*)",
       "Bash(deno task build:*)",
-      "WebFetch(domain:acmsi.ch)"
+      "WebFetch(domain:acmsi.ch)",
+      "Bash(deno task test:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

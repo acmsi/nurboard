@@ -56,7 +56,8 @@ transition.
 
 ### Deployment
 
-Git pull + systemd restart via SSH over Tailscale. No CI/CD pipeline initially.
+Git pull + systemd restart via SSH over Tailscale. GitHub Actions CI runs
+format, lint, and tests on every push/PR.
 
 ```
 ┌───────────────────────────────────────────────────┐
@@ -172,6 +173,20 @@ page auto-reloads every 6h so SSR re-fetches fresh data from the APIs.
 - `docs/` — Pi setup guide, boot config reference
 - `bootstrap.md` — Original project specification (in French)
 - `archives/` — Legacy scripts from previous setup (reference only)
+
+## Commands
+
+- `deno fmt` — format all files
+- `deno lint` — lint all files
+- `deno task test` — run unit tests (sets `CEC_ENABLED=false`)
+- `deno task dev` — start Astro dev server
+- `deno task build` — build Astro for production
+- `deno task start` — start full service (Astro + CEC + tab rotator)
+
+## CI
+
+GitHub Actions runs format, lint, and test on push/PR to `main`
+(`.github/workflows/ci.yml`).
 
 ## Development Conventions
 

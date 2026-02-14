@@ -19,6 +19,11 @@ export interface MembershipData {
 let cached: MembershipData | null = null;
 let cachedAt = 0;
 
+export function _resetForTesting(): void {
+  cached = null;
+  cachedAt = 0;
+}
+
 export async function fetchMembershipData(): Promise<
   FetchResult<MembershipData | null>
 > {

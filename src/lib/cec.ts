@@ -25,6 +25,11 @@ async function cecSend(command: string): Promise<string> {
 export async function tvOn(): Promise<void> {
   console.log("[cec] turning TV on");
   await cecSend("on 0");
+  // Give the TV time to boot, then claim active source so it switches to our HDMI input
+  setTimeout(async () => {
+    console.log("[cec] setting active source");
+    await cecSend("as");
+  }, 10_000);
 }
 
 export async function tvOff(): Promise<void> {

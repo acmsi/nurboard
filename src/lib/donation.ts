@@ -22,6 +22,11 @@ const DEFAULTS: DonationData = {
 let cached: DonationData | null = null;
 let cachedAt = 0;
 
+export function _resetForTesting(): void {
+  cached = null;
+  cachedAt = 0;
+}
+
 export async function fetchDonationData(): Promise<
   FetchResult<DonationData>
 > {
