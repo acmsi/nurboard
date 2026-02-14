@@ -23,7 +23,7 @@ error() { echo "[nurboard] ERROR: $*" >&2; exit 1; }
 # ── System packages ────────────────────────────────────────────────────
 info "Installing system dependencies..."
 sudo apt-get update -qq
-sudo apt-get install -y -qq cec-utils chromium git
+sudo apt-get install -y -qq cec-utils chromium git unclutter-xfixes
 
 # ── Deno ───────────────────────────────────────────────────────────────
 export DENO_INSTALL="$HOME/.deno"
@@ -54,7 +54,7 @@ fi
 # ── Clone or update repo ──────────────────────────────────────────────
 if [ -d "$INSTALL_DIR/.git" ]; then
   info "Updating existing repo..."
-  sudo -u "$CURRENT_USER" git -C "$INSTALL_DIR" pull --ff-only
+  sudo -u "$CURRENT_USER" git -C "$INSTALL_DIR" pull --force
 else
   info "Cloning repo to $INSTALL_DIR..."
   sudo mkdir -p "$INSTALL_DIR"

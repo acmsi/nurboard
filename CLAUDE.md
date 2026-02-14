@@ -52,7 +52,8 @@ The Deno service manages two tabs:
 
 Tabs rotate on a configurable interval (`TAB_ROTATION_SECS`, default 120s).
 Kiosk mode hides the tab bar, so switching looks like a seamless full-screen
-transition.
+transition. `unclutter-xfixes` runs alongside Chrome to hide the mouse cursor
+after 1s of inactivity (launched via `ExecStartPre` in the kiosk service).
 
 ### Deployment
 

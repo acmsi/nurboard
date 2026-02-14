@@ -8,6 +8,7 @@ Type=simple
 User=__USER__
 Environment=DISPLAY=:0
 ExecStartPre=/bin/sleep 3
+ExecStartPre=-/usr/bin/unclutter-xfixes --timeout 1 --fork
 ExecStart=/usr/bin/chromium --kiosk --noerrdialogs --disable-infobars --no-first-run --hide-scrollbars --lang=fr --autoplay-policy=no-user-gesture-required --remote-debugging-port=9222 http://localhost:3000
 Restart=always
 RestartSec=10
