@@ -17,7 +17,7 @@ info() { echo "[nurboard] $*"; }
 cd "$INSTALL_DIR"
 
 info "Pulling latest changes..."
-git pull --ff-only
+git pull --force
 
 info "Installing dependencies..."
 deno install
