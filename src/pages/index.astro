@@ -42,27 +42,29 @@ const membershipPercent = membership
         sandbox="allow-scripts allow-same-origin"></iframe>
       <!-- Mawaqit app promo (overlaid at bottom) -->
       <div
-        class="absolute bottom-0 inset-x-0 flex items-center justify-center gap-6 px-8 py-5 bg-black/90"
+        class="absolute bottom-0 inset-x-0 flex flex-col items-center gap-4 px-8 py-5 bg-black/90"
       >
-        <img
-          src="/qr-mawaqit-app.png"
-          alt="QR code application Mawaqit"
-          class="w-32 h-32 rounded-lg"
-        />
-        <div class="flex flex-col gap-3">
-          <p class="text-white text-xl font-medium">
-            Horaires sur votre téléphone
-          </p>
+        <p class="text-white text-3xl font-medium">
+          Horaires sur votre téléphone
+        </p>
+        <div class="flex items-center justify-center gap-6">
           <img
-            src="/badge-app-store.svg"
-            alt="Download on the App Store"
-            class="h-10"
+            src="/qr-mawaqit-app.png"
+            alt="QR code application Mawaqit"
+            class="w-32 h-32 rounded-lg"
           />
-          <img
-            src="/badge-google-play.svg"
-            alt="Get it on Google Play"
-            class="h-10"
-          />
+          <div class="flex flex-col gap-3">
+            <img
+              src="/badge-app-store.svg"
+              alt="Download on the App Store"
+              class="h-10"
+            />
+            <img
+              src="/badge-google-play.svg"
+              alt="Get it on Google Play"
+              class="h-10"
+            />
+          </div>
         </div>
       </div>
     </aside>

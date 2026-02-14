@@ -2,6 +2,10 @@
 @import "./islamic-pattern.css";
 @import "tailwindcss";
 
+html {
+  font-size: 17px;
+}
+
 @theme inline {
   --font-family-sans:
     Mada, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
