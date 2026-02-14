@@ -1,6 +1,9 @@
+import type { FetchResult } from "./fetch-result.ts";
+
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbwwzqgZUiQEICX8wtM-hlE69H8t6Ht64w4lnByRL8fy6BBib3zzdo8OTfCrQyUAWNfKAw/exec";
+  "https://script.google.com/macros/s/AKfycbxEPnCPCJ687vzXMDmc8M66COZmco0kuzTOcXXtMRZXG71dkaRTVNwMVoWXDFgrIQQmeQ/exec";
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
+const STALE_THRESHOLD_MS = 24 * 60 * 60 * 1000; // 24 hours
 const FETCH_TIMEOUT_MS = 5000;
 
 export interface MembershipData {
@@ -13,22 +16,18 @@ export interface MembershipData {
   cotisation_minimale: number;
 }
 
-const DEFAULTS: MembershipData = {
-  annee: 2025,
-  membres_actifs: 40,
-  membres_a_jour: 15,
-  cotisations_esperees: 14_400,
-  cotisations_recoltees: 5_400,
-  taux_recolte: 37.5,
-  cotisation_minimale: 360,
-};
-
 let cached: MembershipData | null = null;
 let cachedAt = 0;
 
-export async function fetchMembershipData(): Promise<MembershipData> {
+export async function fetchMembershipData(): Promise<
+  FetchResult<MembershipData | null>
+> {
   if (cached && Date.now() - cachedAt < CACHE_TTL_MS) {
-    return cached;
+    return {
+      data: cached,
+      isStale: Date.now() - cachedAt > STALE_THRESHOLD_MS,
+      isFallback: false,
+    };
   }
 
   try {
@@ -39,9 +38,16 @@ export async function fetchMembershipData(): Promise<MembershipData> {
     const data: MembershipData = await res.json();
     cached = data;
     cachedAt = Date.now();
-    return data;
+    return { data, isStale: false, isFallback: false };
   } catch (err) {
     console.error("[membership] fetch failed, using fallback:", err);
-    return cached ?? DEFAULTS;
+    if (cached) {
+      return {
+        data: cached,
+        isStale: Date.now() - cachedAt > STALE_THRESHOLD_MS,
+        isFallback: false,
+      };
+    }
+    return { data: null, isStale: false, isFallback: true };
   }
 }

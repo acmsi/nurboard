@@ -8,8 +8,12 @@ TV.
 
 - Displays prayer times via [Mawaqit](https://mawaqit.net) as a full-screen
   Chrome tab (managed via Chrome DevTools Protocol)
-- Rotates between Mawaqit and a local dashboard tab (announcements, events —
-  future)
+- Shows a dashboard with 3-slide carousel: membership CTA with benefits,
+  donation campaign progress (Projet Xhamia Nur), and an overview combining both
+- Fetches live data from external APIs (Cloudflare Worker for donations, Google
+  Apps Script for membership stats) with 1h cache, 24h staleness detection, and
+  graceful fallbacks when APIs are unreachable
+- Rotates between Mawaqit and the dashboard tab every 2 minutes (configurable)
 - Controls the TV power schedule via HDMI-CEC (auto on/off around prayer times)
 - Exposes REST APIs for tab switching (`/api/tabs`) and TV control (`/api/cec`)
 

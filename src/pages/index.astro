@@ -6,7 +6,8 @@ import { fetchMembershipData } from "../lib/membership";
 const mawaqitUrl =
   "https://mawaqit.net/fr/m/mosquée-nur-2610-saint-imier-switzerland?showNotification=0&showSearchButton=0&showFooter=0&showFlashMessage=0&view=mobile";
 
-const donation = await fetchDonationData();
+const donationResult = await fetchDonationData();
+const donation = donationResult.data;
 const donationCurrent = donation.montant_leve;
 const donationGoal = donation.objectif;
 const donationPercent = donation.pourcentage;
@@ -14,12 +15,19 @@ const donationUpdated = new Date(donation.derniere_maj).toLocaleDateString(
   "fr-CH",
   { day: "numeric", month: "long", year: "numeric" },
 );
+const donationStale = donationResult.isStale || donationResult.isFallback;
 
-const membership = await fetchMembershipData();
-const membersOutstanding = membership.membres_actifs - membership.membres_a_jour;
-const membershipPercent = Math.round(
-  (membership.membres_a_jour / membership.membres_actifs) * 100,
-);
+const membershipResult = await fetchMembershipData();
+const membership = membershipResult.data;
+const showMembershipStats = membership !== null;
+const membershipStale = membershipResult.isStale;
+
+const membersOutstanding = membership
+  ? membership.membres_actifs - membership.membres_a_jour
+  : 0;
+const membershipPercent = membership
+  ? Math.round((membership.membres_a_jour / membership.membres_actifs) * 100)
+  : 0;
 ---
 
 <Layout title="Nurboard">
@@ -80,7 +88,7 @@ const membershipPercent = Math.round(
 
       <!-- Slideshow -->
       <div class="slideshow-viewport flex-1 overflow-hidden relative z-10">
-        <div class="slideshow-track flex h-full transition-transform duration-800 ease-in-out">
+        <div class="slideshow-track flex h-full gap-10 transition-transform duration-800 ease-in-out">
           <!-- Slide 1: Overview (current two cards) -->
           <div class="slideshow-slide w-full shrink-0 flex flex-col gap-5 justify-center">
             <!-- Membership CTA -->
@@ -95,11 +103,14 @@ const membershipPercent = Math.round(
                 </h2>
                 <p class="text-3xl text-nur-cream-200 mb-2">
                   Cotisation annuelle&nbsp;: <strong class="text-white"
-                    >{membership.cotisation_minimale} CHF</strong
+                    >{showMembershipStats ? membership.cotisation_minimale : 360} CHF</strong
                   > minimum par foyer
                 </p>
-                <p class="text-3xl text-nur-teal-200">
+                <p class="text-3xl text-nur-teal-200 mb-2">
                   Garantissez la pérennité de votre mosquée en devenant membre
+                </p>
+                <p class="text-3xl text-white font-semibold">
+                  {showMembershipStats ? membership.membres_a_jour : "–"} <span class="text-nur-teal-300">/ {showMembershipStats ? membership.membres_actifs : "–"} membres à jour</span>
                 </p>
               </div>
               <div class="shrink-0 flex flex-col items-center gap-1">
@@ -153,6 +164,9 @@ const membershipPercent = Math.round(
                       donationUpdated
                     }
                   </p>
+                  {donationStale && (
+                    <p class="text-base text-nur-teal-500 mt-1">&#9888; Données mises en cache</p>
+                  )}
                 </div>
               </div>
               <div class="shrink-0 flex flex-col items-center gap-1">
@@ -170,38 +184,66 @@ const membershipPercent = Math.round(
             </div>
           </div>
 
-          <!-- Slide 2: Membership (full) -->
+          <!-- Slide 2: Membership — CTA + optional stats -->
           <div class="slideshow-slide w-full shrink-0 flex flex-col gap-5 justify-center">
             <div
               class="bg-nur-teal-900/60 backdrop-blur-md rounded-2xl p-10 flex gap-10 items-center"
             >
               <div class="flex-1">
                 <h2
-                  class="font-headings text-5xl font-bold text-nur-gold-400 mb-6"
+                  class="font-headings text-5xl font-bold text-nur-gold-400 mb-3"
                 >
-                  Cotisations {membership.annee}
+                  Adhésion à l'ACMSI
                 </h2>
-                <p class="text-6xl font-bold text-white mb-4">
-                  {membership.membres_a_jour} <span class="text-nur-teal-300 text-4xl">/ {membership.membres_actifs} membres à jour</span>
+                <p class="text-3xl text-nur-cream-200 mb-6">
+                  Devenez membre, <strong class="text-nur-gold-400">assurez l'avenir de votre mosquée</strong>
                 </p>
-                <!-- Progress bar -->
-                <div class="mb-6">
-                  <div
-                    class="w-full h-8 bg-nur-teal-800 rounded-full overflow-hidden"
-                  >
-                    <div
-                      class="h-full bg-nur-gold-500 rounded-full"
-                      style={`width: ${membershipPercent}%`}
-                    >
+                <!-- Benefits list -->
+                <ul class="text-3xl text-nur-cream-200 space-y-3 mb-6 list-none">
+                  <li class="flex items-start gap-3">
+                    <span class="text-nur-gold-400 shrink-0">&#10003;</span>
+                    <span>Assurance communautaire (rapatriement — épouse et enfants couverts)</span>
+                  </li>
+                  <li class="flex items-start gap-3">
+                    <span class="text-nur-gold-400 shrink-0">&#10003;</span>
+                    <span>Location salle cafétéria (mariages, enterrements, iftars)</span>
+                  </li>
+                  <li class="flex items-start gap-3">
+                    <span class="text-nur-gold-400 shrink-0">&#10003;</span>
+                    <span>Services communautaires dédiés</span>
+                  </li>
+                </ul>
+                <p class="text-3xl text-nur-cream-200 mb-6">
+                  Cotisation annuelle&nbsp;: <strong class="text-white">{showMembershipStats ? membership.cotisation_minimale : 360} CHF</strong> minimum par foyer
+                </p>
+                {showMembershipStats && (
+                  <div>
+                    <p class="text-5xl font-bold text-white mb-4">
+                      {membership.membres_a_jour} <span class="text-nur-teal-300 text-3xl">/ {membership.membres_actifs} membres à jour</span>
+                    </p>
+                    <!-- Progress bar -->
+                    <div class="mb-4">
+                      <div
+                        class="w-full h-8 bg-nur-teal-800 rounded-full overflow-hidden"
+                      >
+                        <div
+                          class="h-full bg-nur-gold-500 rounded-full"
+                          style={`width: ${membershipPercent}%`}
+                        >
+                        </div>
+                      </div>
                     </div>
+                    <p class="text-3xl text-nur-cream-200 mb-3">
+                      <strong class="text-white">{membersOutstanding} foyers</strong> ne sont pas à jour pour leur cotisation {membership.annee}
+                    </p>
+                    <p class="text-3xl text-nur-teal-300">
+                      {membership.cotisations_recoltees.toLocaleString("fr-CH")} CHF récoltés sur {membership.cotisations_esperees.toLocaleString("fr-CH")} CHF
+                    </p>
+                    {membershipStale && (
+                      <p class="text-base text-nur-teal-500 mt-2">&#9888; Données mises en cache</p>
+                    )}
                   </div>
-                </div>
-                <p class="text-3xl text-nur-cream-200 mb-3">
-                  <strong class="text-white">{membersOutstanding} foyers</strong> n'ont pas encore réglé leur cotisation {membership.annee}
-                </p>
-                <p class="text-3xl text-nur-teal-300">
-                  {membership.cotisations_recoltees.toLocaleString("fr-CH")} CHF récoltés sur {membership.cotisations_esperees.toLocaleString("fr-CH")} CHF
-                </p>
+                )}
               </div>
               <div class="shrink-0 flex flex-col items-center gap-1">
                 <div class="bg-white rounded-2xl overflow-hidden">
@@ -218,52 +260,88 @@ const membershipPercent = Math.round(
 
           <!-- Slide 3: Xhamia Nur (full) -->
           <div class="slideshow-slide w-full shrink-0 flex flex-col gap-5 justify-center">
-            <div
-              class="bg-nur-teal-900/60 backdrop-blur-md rounded-2xl p-10 flex gap-10 items-center"
-            >
-              <div class="flex-1">
-                <h2
-                  class="font-headings text-5xl font-bold text-nur-gold-400 mb-4"
-                >
-                  Projet Xhamia Nur
-                </h2>
-                <p class="text-3xl text-nur-cream-200 mb-6">
-                  Aidez-nous à racheter notre mosquée
-                </p>
-                <!-- Large progress bar -->
-                <div class="mb-4">
-                  <div
-                    class="w-full h-10 bg-nur-teal-800 rounded-full overflow-hidden"
+            <div class="bg-nur-teal-900/60 backdrop-blur-md rounded-2xl p-10">
+              <div class="flex gap-10 items-center">
+                <div class="flex-1">
+                  <h2
+                    class="font-headings text-5xl font-bold text-nur-gold-400 mb-4"
                   >
+                    Projet Xhamia Nur
+                  </h2>
+                  <p class="text-3xl text-nur-cream-200 mb-3">
+                    Rachat de notre mosquée sans riba
+                  </p>
+                  <p class="text-3xl text-nur-cream-200 mb-6">
+                    Chaque don compte, <strong class="text-nur-gold-400">contribuez maintenant</strong>
+                  </p>
+                  <!-- Large progress bar -->
+                  <div class="mb-4">
                     <div
-                      class="h-full bg-nur-gold-500 rounded-full"
-                      style={`width: ${donationPercent}%`}
+                      class="w-full h-10 bg-nur-teal-800 rounded-full overflow-hidden"
                     >
+                      <div
+                        class="h-full bg-nur-gold-500 rounded-full relative flex items-center"
+                        style={`width: ${donationPercent}%`}
+                      >
+                        <span class="absolute inset-0 flex items-center justify-end pr-3 text-white font-bold text-lg">
+                          {donationPercent.toLocaleString("fr-CH")}%
+                        </span>
+                      </div>
+                    </div>
+                    <div class="flex justify-between text-3xl mt-2">
+                      <span class="font-semibold text-nur-gold-400"
+                        >{donationCurrent.toLocaleString("fr-CH")} CHF collectés</span
+                      >
+                      <span class="text-nur-teal-200"
+                        >Objectif&nbsp;: {donationGoal.toLocaleString("fr-CH")} CHF</span
+                      >
                     </div>
                   </div>
+                  <p class="text-2xl text-nur-teal-400">
+                    Mis à jour le {donationUpdated}
+                  </p>
+                  {donationStale && (
+                    <p class="text-base text-nur-teal-500 mt-1">&#9888; Données mises en cache</p>
+                  )}
                 </div>
-                <p class="text-5xl font-bold text-nur-gold-400 mb-2">
-                  {donationCurrent.toLocaleString("fr-CH")} CHF
-                </p>
-                <p class="text-3xl text-nur-teal-200 mb-4">
-                  collectés sur {donationGoal.toLocaleString("fr-CH")} CHF &mdash; {donationPercent.toLocaleString("fr-CH")}%
-                </p>
-                <p class="text-2xl text-nur-teal-400">
-                  Mis à jour le {donationUpdated}
+                <div class="shrink-0 flex flex-col items-center gap-1">
+                  <div class="bg-white rounded-2xl overflow-hidden">
+                    <img
+                      src="/qr-xhamia-nur.svg"
+                      alt="QR code don Xhamia Nur"
+                      class="w-52 h-52"
+                    />
+                  </div>
+                  <span class="text-base text-nur-teal-400"
+                    >acmsi.ch/projet-xhamia-nur</span
+                  >
+                </div>
+              </div>
+              <!-- Cash donation reminder -->
+              <div class="flex items-center justify-center gap-4 text-nur-cream-200 mt-4 pt-4 border-t border-nur-teal-700">
+                <!-- Donation box icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-nur-gold-400">
+                  <path d="M8 18L16 18" stroke="currentColor"></path>
+                  <path d="M18.2222 16C18.9126 16.0195 19.3245 16.0918 19.6095 16.3594C20 16.7261 20 17.3162 20 18.4964C20 19.6766 20 20.2667 19.6095 20.6334C19.219 21 18.5904 21 17.3333 21H6.66667C5.40959 21 4.78105 21 4.39052 20.6334C4 20.2667 4 19.6766 4 18.4964C4 17.3162 4 16.7261 4.39052 16.3594C4.67555 16.0918 5.08736 16.0195 5.77778 16" fill="none" stroke="currentColor"></path>
+                  <path d="M12 13C10.3431 13 9 14.2792 9 15.8571C9 16.7105 9.39282 17.4765 10.0156 18H13.9844C14.6072 17.4765 15 16.7105 15 15.8571C15 14.2792 13.6569 13 12 13Z" fill="#FBBF24" stroke="currentColor"></path>
+                  <path d="M19 10L16.9045 10C16.6472 10 16.3933 9.94201 16.1631 9.83063L14.3764 8.96613C14.1462 8.85475 13.8923 8.79676 13.6349 8.79676L12.7226 8.79676C11.8403 8.79676 11.125 8.10459 11.125 7.25075C11.125 7.21624 11.1486 7.18591 11.1829 7.17643L13.4062 6.56173C13.8051 6.45146 14.2321 6.48987 14.6031 6.66937L16.5132 7.59353M11.125 7.8125L7.10632 9.0472C6.3939 9.26917 5.62381 9.00597 5.17753 8.38799C4.85487 7.94118 4.98625 7.30134 5.45635 7.0301L12.0325 3.23579C12.4507 2.99446 12.9442 2.93558 13.4042 3.0721L19 4.73255" fill="none" stroke="currentColor"></path>
+                </svg>
+                <p class="text-3xl">
+                  Don en espèces&nbsp;: déposez dans la <strong class="text-white">boîte à l'entrée de la salle de prière</strong>
                 </p>
               </div>
-              <div class="shrink-0 flex flex-col items-center gap-1">
-                <div class="bg-white rounded-2xl overflow-hidden">
-                  <img
-                    src="/qr-xhamia-nur.svg"
-                    alt="QR code don Xhamia Nur"
-                    class="w-52 h-52"
-                  />
-                </div>
-                <span class="text-base text-nur-teal-400"
-                  >acmsi.ch/projet-xhamia-nur</span
-                >
-              </div>
+            </div>
+            <!-- Hadith -->
+            <div class="text-center space-y-3">
+              <p class="text-3xl leading-loose text-nur-cream-200" dir="rtl" lang="ar">
+                مَنْ بَنَى مَسْجِدًا يَبْتَغِي بِهِ وَجْهَ اللَّهِ بَنَى اللَّهُ لَهُ مِثْلَهُ فِي الْجَنَّةِ
+              </p>
+              <p class="text-3xl text-nur-cream-200 italic font-medium">
+                &laquo;&nbsp;Celui qui construit une mosquée pour Allah, Allah lui construit son équivalent au Paradis.&nbsp;&raquo;
+              </p>
+              <p class="text-lg text-nur-teal-400">
+                &mdash; Sahih Muslim 533
+              </p>
             </div>
           </div>
         </div>
@@ -427,7 +505,7 @@ const membershipPercent = Math.round(
 
   function goTo(index: number) {
     current = index;
-    track.style.transform = `translateX(-${current * 100}%)`;
+    track.style.transform = `translateX(calc(-${current} * (100% + 2.5rem)))`;
     setActive(current);
     resetTimer();
   }
@@ -436,7 +514,7 @@ const membershipPercent = Math.round(
     clearInterval(timer);
     timer = setInterval(() => {
       current = (current + 1) % slides.length;
-      track.style.transform = `translateX(-${current * 100}%)`;
+      track.style.transform = `translateX(calc(-${current} * (100% + 2.5rem)))`;
       setActive(current);
     }, 30_000);
   }

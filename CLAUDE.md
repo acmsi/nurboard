@@ -47,8 +47,8 @@ The Deno service manages two tabs:
 
 1. **Mawaqit** — the full prayer times page (loaded as a native tab, bypassing
    X-Frame-Options restrictions that block iframe embedding)
-2. **Dashboard** — the Astro app at `localhost:3000` (announcements, payment
-   reminders, events — future)
+2. **Dashboard** — the Astro app at `localhost:3000` (membership CTA, donation
+   progress, cash donation reminder, hadith)
 
 Tabs rotate on a configurable interval (`TAB_ROTATION_SECS`, default 120s).
 Kiosk mode hides the tab bar, so switching looks like a seamless full-screen
@@ -109,6 +109,51 @@ echo "standby 0" | cec-client -s -d 1
 The Pi has headless HDMI output forced in `/boot/firmware/config.txt` — see
 [docs/rpi-boot-config.md](docs/rpi-boot-config.md) for details.
 
+## Data Sources
+
+The dashboard fetches live data from two external APIs. Each fetcher uses 5s
+timeout, 1h server-side cache, and a `FetchResult<T>` wrapper
+(`src/lib/fetch-result.ts`) that exposes `isStale` (cached >24h) and
+`isFallback` (using defaults or null) flags for conditional UI rendering.
+
+### Donation data (`src/lib/donation.ts`)
+
+- **API**: `https://acmsi.ch/api/projet-xhamia-nur` (Cloudflare Worker)
+- **Fields**: `objectif`, `montant_leve`, `pourcentage`, `derniere_maj`
+- **Fallback**: hardcoded defaults (last known values) when API is unreachable
+  and no cache exists; stale warning shown in UI
+
+### Membership data (`src/lib/membership.ts`)
+
+- **API**: Google Apps Script published as web app
+  (`script.google.com/macros/s/.../exec`) — exposes a small anonymous subset of
+  data from the "ACMSI Membres et Cotisations" Google Sheet
+- **Fields**: `annee`, `membres_actifs`, `membres_a_jour`,
+  `cotisations_esperees`, `cotisations_recoltees`, `taux_recolte`,
+  `cotisation_minimale`
+- **"Membres a jour" logic**: the spreadsheet uses a prorated formula — a member
+  is considered "a jour" if they've paid at least
+  `(cotisation * current_month / 12)`, so partial payers (e.g. semi-annual
+  installments) aren't penalized early in the year
+- **Fallback**: returns `null` data when API is unreachable and no cache exists
+  (no hardcoded defaults — unlike donations, membership has no "last updated"
+  date, so stale data would be misleading). The dashboard hides stats and shows
+  a static CTA with benefits list instead
+
+### Dashboard slideshow
+
+The right panel rotates between 3 slides every 30s with a CSS `translateX`-based
+horizontal carousel:
+
+1. **Overview** — membership CTA (with member count) + donation summary
+2. **Adhésion** — membership benefits list + optional stats (hidden if API data
+   unavailable), QR code to acmsi.ch/donation
+3. **Projet Xhamia Nur** — fundraiser progress bar with % inside, cash donation
+   reminder, and hadith (Sahih Muslim 533)
+
+Dot indicators with a progress ring animation show countdown to next slide. The
+page auto-reloads every 6h so SSR re-fetches fresh data from the APIs.
+
 ## Repository Structure
 
 - `main.ts` — Entry point: starts CEC scheduler, tab rotator, then Astro server
@@ -118,7 +163,10 @@ The Pi has headless HDMI output forced in `/boot/firmware/config.txt` — see
 - `src/lib/tab-rotator.ts` — Tab orchestration (setup, rotation, resilience)
 - `src/pages/api/cec.ts` — REST API for TV control
 - `src/pages/api/tabs.ts` — REST API for tab control
-- `src/pages/index.astro` — Dashboard page (placeholder, future content)
+- `src/lib/fetch-result.ts` — Shared `FetchResult<T>` type (isStale, isFallback)
+- `src/lib/donation.ts` — Donation API fetcher (Xhamia Nur fundraiser)
+- `src/lib/membership.ts` — Membership API fetcher (cotisation stats)
+- `src/pages/index.astro` — Dashboard page (slideshow carousel with 3 slides)
 - `systemd/` — systemd unit files for Deno service and Chrome kiosk
 - `scripts/` — Install (`install.sh`), update (`update.sh`), SD backup
 - `docs/` — Pi setup guide, boot config reference

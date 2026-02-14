@@ -5,7 +5,8 @@
       "WebSearch",
       "Bash(deno fmt:*)",
       "Bash(deno lint:*)",
-      "Bash(deno task build:*)"
+      "Bash(deno task build:*)",
+      "WebFetch(domain:acmsi.ch)"
     ]
   },
   "enableAllProjectMcpServers": true,
