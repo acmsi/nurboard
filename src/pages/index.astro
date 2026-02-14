@@ -33,16 +33,16 @@ const membershipPercent = membership
 <Layout title="Nurboard">
   <main class="flex h-screen">
     <!-- Left: Mawaqit prayer times widget + app promo overlay -->
-    <aside class="w-[515px] shrink-0 relative">
+    <aside class="w-[515px] shrink-0 relative" style="contain: strict;">
       <iframe
         src={mawaqitUrl}
         title="Horaires de prière - Mawaqit"
-        class="w-full h-full border-0"
+        class="w-full h-full border-0 will-change-transform"
         loading="eager"
         sandbox="allow-scripts allow-same-origin"></iframe>
       <!-- Mawaqit app promo (overlaid at bottom) -->
       <div
-        class="absolute bottom-0 inset-x-0 flex items-center justify-center gap-6 px-8 py-5 bg-black/80 backdrop-blur-md"
+        class="absolute bottom-0 inset-x-0 flex items-center justify-center gap-6 px-8 py-5 bg-black/90"
       >
         <img
           src="/qr-mawaqit-app.png"
@@ -93,7 +93,7 @@ const membershipPercent = membership
           <div class="slideshow-slide w-full shrink-0 flex flex-col gap-5 justify-center">
             <!-- Membership CTA -->
             <div
-              class="bg-nur-teal-900/60 backdrop-blur-md rounded-2xl p-8 flex gap-8 items-center"
+              class="bg-nur-teal-900/80 rounded-2xl p-8 flex gap-8 items-center"
             >
               <div class="flex-1">
                 <h2
@@ -127,7 +127,7 @@ const membershipPercent = membership
 
             <!-- Xhamia Nur Donation (compact) -->
             <div
-              class="bg-nur-teal-900/60 backdrop-blur-md rounded-2xl p-8 flex gap-8 items-center"
+              class="bg-nur-teal-900/80 rounded-2xl p-8 flex gap-8 items-center"
             >
               <div class="flex-1">
                 <h2
@@ -187,7 +187,7 @@ const membershipPercent = membership
           <!-- Slide 2: Membership — CTA + optional stats -->
           <div class="slideshow-slide w-full shrink-0 flex flex-col gap-5 justify-center">
             <div
-              class="bg-nur-teal-900/60 backdrop-blur-md rounded-2xl p-10 flex gap-10 items-center"
+              class="bg-nur-teal-900/80 rounded-2xl p-10 flex gap-10 items-center"
             >
               <div class="flex-1">
                 <h2
@@ -260,7 +260,7 @@ const membershipPercent = membership
 
           <!-- Slide 3: Xhamia Nur (full) -->
           <div class="slideshow-slide w-full shrink-0 flex flex-col gap-5 justify-center">
-            <div class="bg-nur-teal-900/60 backdrop-blur-md rounded-2xl p-10">
+            <div class="bg-nur-teal-900/80 rounded-2xl p-10">
               <div class="flex gap-10 items-center">
                 <div class="flex-1">
                   <h2
@@ -349,15 +349,9 @@ const membershipPercent = membership
 
       <!-- Slide indicators -->
       <div class="flex justify-center gap-4 relative z-10 shrink-0" id="slideshow-indicators">
-        <button class="slide-indicator active" aria-label="Slide 1">
-          <svg viewBox="0 0 36 36" class="indicator-ring"><circle cx="18" cy="18" r="16" /></svg>
-        </button>
-        <button class="slide-indicator" aria-label="Slide 2">
-          <svg viewBox="0 0 36 36" class="indicator-ring"><circle cx="18" cy="18" r="16" /></svg>
-        </button>
-        <button class="slide-indicator" aria-label="Slide 3">
-          <svg viewBox="0 0 36 36" class="indicator-ring"><circle cx="18" cy="18" r="16" /></svg>
-        </button>
+        <button class="slide-indicator active" aria-label="Slide 1"></button>
+        <button class="slide-indicator" aria-label="Slide 2"></button>
+        <button class="slide-indicator" aria-label="Slide 3"></button>
       </div>
 
       <!-- Footer: WhatsApp + acmsi.ch -->
@@ -459,29 +453,42 @@ const membershipPercent = membership
     background: var(--color-nur-teal-400);
   }
 
-  .indicator-ring {
+  @property --ring-progress {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 0;
+  }
+
+  .slide-indicator::after {
+    content: "";
     position: absolute;
     inset: -4px;
-    width: calc(100% + 8px);
-    height: calc(100% + 8px);
-    fill: none;
-    stroke: var(--color-nur-gold-400);
-    stroke-width: 2.5;
-    stroke-dasharray: 100.53;
-    stroke-dashoffset: 100.53;
-    stroke-linecap: round;
-    transform: rotate(-90deg);
+    border-radius: 50%;
+    background: conic-gradient(
+      var(--color-nur-gold-400) calc(var(--ring-progress) * 1turn),
+      transparent 0
+    );
+    mask: radial-gradient(
+      farthest-side,
+      transparent calc(100% - 2.5px),
+      #000 calc(100% - 2.5px)
+    );
+    -webkit-mask: radial-gradient(
+      farthest-side,
+      transparent calc(100% - 2.5px),
+      #000 calc(100% - 2.5px)
+    );
     opacity: 0;
   }
 
-  .slide-indicator.active .indicator-ring {
+  .slide-indicator.active::after {
     opacity: 1;
-    animation: indicator-fill 30s linear forwards;
+    animation: indicator-fill 30s steps(30, end) forwards;
   }
 
   @keyframes indicator-fill {
     to {
-      stroke-dashoffset: 0;
+      --ring-progress: 1;
     }
   }
 </style>
@@ -493,12 +500,13 @@ const membershipPercent = membership
 
   function setActive(index: number) {
     indicators.forEach((ind, i) => {
-      ind.classList.toggle("active", i === index);
-      // Re-trigger the CSS animation by cloning the SVG
-      const svg = ind.querySelector(".indicator-ring");
-      if (svg && i === index) {
-        const clone = svg.cloneNode(true);
-        svg.replaceWith(clone);
+      if (i === index) {
+        ind.classList.remove("active");
+        // Force style recalc before re-adding to restart animation
+        void (ind as HTMLElement).offsetWidth;
+        ind.classList.add("active");
+      } else {
+        ind.classList.remove("active");
       }
     });
   }
