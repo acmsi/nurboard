@@ -54,7 +54,8 @@ fi
 # ── Clone or update repo ──────────────────────────────────────────────
 if [ -d "$INSTALL_DIR/.git" ]; then
   info "Updating existing repo..."
-  sudo -u "$CURRENT_USER" git -C "$INSTALL_DIR" pull --force
+  sudo -u "$CURRENT_USER" git -C "$INSTALL_DIR" fetch origin main
+  sudo -u "$CURRENT_USER" git -C "$INSTALL_DIR" reset --hard origin/main
 else
   info "Cloning repo to $INSTALL_DIR..."
   sudo mkdir -p "$INSTALL_DIR"
