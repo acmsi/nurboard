@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { fetchDonationData } from "../lib/donation";
+import { fetchMembershipData } from "../lib/membership";
 
 const mawaqitUrl =
   "https://mawaqit.net/fr/m/mosquée-nur-2610-saint-imier-switzerland?showNotification=0&showSearchButton=0&showFooter=0&showFlashMessage=0&view=mobile";
@@ -12,6 +13,12 @@ const donationPercent = donation.pourcentage;
 const donationUpdated = new Date(donation.derniere_maj).toLocaleDateString(
   "fr-CH",
   { day: "numeric", month: "long", year: "numeric" },
+);
+
+const membership = await fetchMembershipData();
+const membersOutstanding = membership.membres_actifs - membership.membres_a_jour;
+const membershipPercent = Math.round(
+  (membership.membres_a_jour / membership.membres_actifs) * 100,
 );
 ---
 
@@ -71,100 +78,215 @@ const donationUpdated = new Date(donation.derniere_maj).toLocaleDateString(
         </p>
       </header>
 
-      <!-- Cards -->
-      <div class="flex-1 flex flex-col gap-5 justify-center relative z-10">
-        <!-- Membership CTA -->
-        <div
-          class="bg-nur-teal-900/60 backdrop-blur-md rounded-2xl p-8 flex gap-8 items-center"
-        >
-          <div class="flex-1">
-            <h2
-              class="font-headings text-5xl font-bold text-nur-gold-400 mb-3"
+      <!-- Slideshow -->
+      <div class="slideshow-viewport flex-1 overflow-hidden relative z-10">
+        <div class="slideshow-track flex h-full transition-transform duration-800 ease-in-out">
+          <!-- Slide 1: Overview (current two cards) -->
+          <div class="slideshow-slide w-full shrink-0 flex flex-col gap-5 justify-center">
+            <!-- Membership CTA -->
+            <div
+              class="bg-nur-teal-900/60 backdrop-blur-md rounded-2xl p-8 flex gap-8 items-center"
             >
-              Rejoignez l'ACMSI
-            </h2>
-            <p class="text-3xl text-nur-cream-200 mb-2">
-              Cotisation annuelle&nbsp;: <strong class="text-white"
-                >360 CHF</strong
-              > minimum par foyer
-            </p>
-            <p class="text-3xl text-nur-teal-200">
-              Garantissez la pérennité de votre mosquée en devenant membre
-            </p>
-          </div>
-          <div class="shrink-0 flex flex-col items-center gap-1">
-            <div class="bg-white rounded-2xl overflow-hidden">
-              <img
-                src="/qr-adhesion.svg"
-                alt="QR code adhésion ACMSI"
-                class="w-52 h-52"
-              />
-            </div>
-            <span class="text-base text-nur-teal-400">acmsi.ch/donation</span>
-          </div>
-        </div>
-
-        <!-- Xhamia Nur Donation -->
-        <div
-          class="bg-nur-teal-900/60 backdrop-blur-md rounded-2xl p-8 flex gap-8 items-center"
-        >
-          <div class="flex-1">
-            <h2
-              class="font-headings text-5xl font-bold text-nur-gold-400 mb-3"
-            >
-              Projet Xhamia Nur
-            </h2>
-            <p class="text-3xl text-nur-cream-200 mb-4">
-              Aidez-nous à racheter notre mosquée
-            </p>
-            <!-- Progress bar -->
-            <div>
-              <div
-                class="w-full h-6 bg-nur-teal-800 rounded-full overflow-hidden"
-              >
-                <div
-                  class="h-full bg-nur-gold-500 rounded-full"
-                  style={`width: ${donationPercent}%`}
+              <div class="flex-1">
+                <h2
+                  class="font-headings text-5xl font-bold text-nur-gold-400 mb-3"
                 >
+                  Rejoignez l'ACMSI
+                </h2>
+                <p class="text-3xl text-nur-cream-200 mb-2">
+                  Cotisation annuelle&nbsp;: <strong class="text-white"
+                    >{membership.cotisation_minimale} CHF</strong
+                  > minimum par foyer
+                </p>
+                <p class="text-3xl text-nur-teal-200">
+                  Garantissez la pérennité de votre mosquée en devenant membre
+                </p>
+              </div>
+              <div class="shrink-0 flex flex-col items-center gap-1">
+                <div class="bg-white rounded-2xl overflow-hidden">
+                  <img
+                    src="/qr-adhesion.svg"
+                    alt="QR code adhésion ACMSI"
+                    class="w-52 h-52"
+                  />
+                </div>
+                <span class="text-base text-nur-teal-400">acmsi.ch/donation</span>
+              </div>
+            </div>
+
+            <!-- Xhamia Nur Donation (compact) -->
+            <div
+              class="bg-nur-teal-900/60 backdrop-blur-md rounded-2xl p-8 flex gap-8 items-center"
+            >
+              <div class="flex-1">
+                <h2
+                  class="font-headings text-5xl font-bold text-nur-gold-400 mb-3"
+                >
+                  Projet Xhamia Nur
+                </h2>
+                <p class="text-3xl text-nur-cream-200 mb-4">
+                  Aidez-nous à racheter notre mosquée
+                </p>
+                <!-- Progress bar -->
+                <div>
+                  <div
+                    class="w-full h-6 bg-nur-teal-800 rounded-full overflow-hidden"
+                  >
+                    <div
+                      class="h-full bg-nur-gold-500 rounded-full"
+                      style={`width: ${donationPercent}%`}
+                    >
+                    </div>
+                  </div>
+                  <div
+                    class="flex justify-between text-3xl mt-2"
+                  >
+                    <span class="font-semibold text-nur-gold-400"
+                      >{donationCurrent.toLocaleString("fr-CH")} CHF collectés</span
+                    >
+                    <span class="text-nur-teal-200"
+                      >Objectif&nbsp;: {donationGoal.toLocaleString("fr-CH")} CHF</span
+                    >
+                  </div>
+                  <p class="text-3xl text-nur-teal-300 mt-1">
+                    {donationPercent.toLocaleString("fr-CH")}% de l'objectif &middot; mis à jour le {
+                      donationUpdated
+                    }
+                  </p>
                 </div>
               </div>
-              <div
-                class="flex justify-between text-3xl mt-2"
-              >
-                <span class="font-semibold text-nur-gold-400"
-                  >{donationCurrent.toLocaleString("fr-CH")} CHF collectés</span
-                >
-                <span class="text-nur-teal-200"
-                  >Objectif&nbsp;: {donationGoal.toLocaleString("fr-CH")} CHF</span
+              <div class="shrink-0 flex flex-col items-center gap-1">
+                <div class="bg-white rounded-2xl overflow-hidden">
+                  <img
+                    src="/qr-xhamia-nur.svg"
+                    alt="QR code don Xhamia Nur"
+                    class="w-52 h-52"
+                  />
+                </div>
+                <span class="text-base text-nur-teal-400"
+                  >acmsi.ch/projet-xhamia-nur</span
                 >
               </div>
-              <p class="text-3xl text-nur-teal-300 mt-1">
-                {donationPercent.toLocaleString("fr-CH")}% de l'objectif &middot; mis à jour le {
-                  donationUpdated
-                }
-              </p>
             </div>
           </div>
-          <div class="shrink-0 flex flex-col items-center gap-1">
-            <div class="bg-white rounded-2xl overflow-hidden">
-              <img
-                src="/qr-xhamia-nur.svg"
-                alt="QR code don Xhamia Nur"
-                class="w-52 h-52"
-              />
-            </div>
-            <span class="text-base text-nur-teal-400"
-              >acmsi.ch/projet-xhamia-nur</span
+
+          <!-- Slide 2: Membership (full) -->
+          <div class="slideshow-slide w-full shrink-0 flex flex-col gap-5 justify-center">
+            <div
+              class="bg-nur-teal-900/60 backdrop-blur-md rounded-2xl p-10 flex gap-10 items-center"
             >
+              <div class="flex-1">
+                <h2
+                  class="font-headings text-5xl font-bold text-nur-gold-400 mb-6"
+                >
+                  Cotisations {membership.annee}
+                </h2>
+                <p class="text-6xl font-bold text-white mb-4">
+                  {membership.membres_a_jour} <span class="text-nur-teal-300 text-4xl">/ {membership.membres_actifs} membres à jour</span>
+                </p>
+                <!-- Progress bar -->
+                <div class="mb-6">
+                  <div
+                    class="w-full h-8 bg-nur-teal-800 rounded-full overflow-hidden"
+                  >
+                    <div
+                      class="h-full bg-nur-gold-500 rounded-full"
+                      style={`width: ${membershipPercent}%`}
+                    >
+                    </div>
+                  </div>
+                </div>
+                <p class="text-3xl text-nur-cream-200 mb-3">
+                  <strong class="text-white">{membersOutstanding} foyers</strong> n'ont pas encore réglé leur cotisation {membership.annee}
+                </p>
+                <p class="text-3xl text-nur-teal-300">
+                  {membership.cotisations_recoltees.toLocaleString("fr-CH")} CHF récoltés sur {membership.cotisations_esperees.toLocaleString("fr-CH")} CHF
+                </p>
+              </div>
+              <div class="shrink-0 flex flex-col items-center gap-1">
+                <div class="bg-white rounded-2xl overflow-hidden">
+                  <img
+                    src="/qr-adhesion.svg"
+                    alt="QR code adhésion ACMSI"
+                    class="w-52 h-52"
+                  />
+                </div>
+                <span class="text-base text-nur-teal-400">acmsi.ch/donation</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slide 3: Xhamia Nur (full) -->
+          <div class="slideshow-slide w-full shrink-0 flex flex-col gap-5 justify-center">
+            <div
+              class="bg-nur-teal-900/60 backdrop-blur-md rounded-2xl p-10 flex gap-10 items-center"
+            >
+              <div class="flex-1">
+                <h2
+                  class="font-headings text-5xl font-bold text-nur-gold-400 mb-4"
+                >
+                  Projet Xhamia Nur
+                </h2>
+                <p class="text-3xl text-nur-cream-200 mb-6">
+                  Aidez-nous à racheter notre mosquée
+                </p>
+                <!-- Large progress bar -->
+                <div class="mb-4">
+                  <div
+                    class="w-full h-10 bg-nur-teal-800 rounded-full overflow-hidden"
+                  >
+                    <div
+                      class="h-full bg-nur-gold-500 rounded-full"
+                      style={`width: ${donationPercent}%`}
+                    >
+                    </div>
+                  </div>
+                </div>
+                <p class="text-5xl font-bold text-nur-gold-400 mb-2">
+                  {donationCurrent.toLocaleString("fr-CH")} CHF
+                </p>
+                <p class="text-3xl text-nur-teal-200 mb-4">
+                  collectés sur {donationGoal.toLocaleString("fr-CH")} CHF &mdash; {donationPercent.toLocaleString("fr-CH")}%
+                </p>
+                <p class="text-2xl text-nur-teal-400">
+                  Mis à jour le {donationUpdated}
+                </p>
+              </div>
+              <div class="shrink-0 flex flex-col items-center gap-1">
+                <div class="bg-white rounded-2xl overflow-hidden">
+                  <img
+                    src="/qr-xhamia-nur.svg"
+                    alt="QR code don Xhamia Nur"
+                    class="w-52 h-52"
+                  />
+                </div>
+                <span class="text-base text-nur-teal-400"
+                  >acmsi.ch/projet-xhamia-nur</span
+                >
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
+      <!-- Slide indicators -->
+      <div class="flex justify-center gap-4 relative z-10 shrink-0" id="slideshow-indicators">
+        <button class="slide-indicator active" aria-label="Slide 1">
+          <svg viewBox="0 0 36 36" class="indicator-ring"><circle cx="18" cy="18" r="16" /></svg>
+        </button>
+        <button class="slide-indicator" aria-label="Slide 2">
+          <svg viewBox="0 0 36 36" class="indicator-ring"><circle cx="18" cy="18" r="16" /></svg>
+        </button>
+        <button class="slide-indicator" aria-label="Slide 3">
+          <svg viewBox="0 0 36 36" class="indicator-ring"><circle cx="18" cy="18" r="16" /></svg>
+        </button>
+      </div>
+
       <!-- Footer: WhatsApp + acmsi.ch -->
       <div
-        class="rounded-2xl p-5 flex items-start justify-center gap-16 relative z-10 shrink-0"
+        class="rounded-2xl p-2 flex items-start justify-center gap-16 relative z-10 shrink-0"
       >
-        <div class="flex items-start gap-5">
+        <div class="flex-1 flex items-start justify-end gap-5">
           <div class="shrink-0 bg-white rounded-2xl overflow-hidden">
             <img
               src="/qr-whatsapp.svg"
@@ -194,7 +316,7 @@ const donationUpdated = new Date(donation.derniere_maj).toLocaleDateString(
           </div>
         </div>
         <div class="w-px self-stretch bg-nur-teal-700"></div>
-        <div class="flex items-start gap-5">
+        <div class="flex-1 flex items-start gap-5">
           <div class="pt-2">
             <p class="text-2xl text-nur-cream-200">Retrouvez-nous sur</p>
             <p class="text-4xl font-bold text-nur-gold-400">acmsi.ch</p>
@@ -242,4 +364,93 @@ const donationUpdated = new Date(donation.derniere_maj).toLocaleDateString(
   .font-headings {
     font-family: var(--font-family-headings);
   }
+
+  .slide-indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--color-nur-teal-700);
+    border: none;
+    padding: 0;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .slide-indicator.active {
+    background: var(--color-nur-teal-400);
+  }
+
+  .indicator-ring {
+    position: absolute;
+    inset: -4px;
+    width: calc(100% + 8px);
+    height: calc(100% + 8px);
+    fill: none;
+    stroke: var(--color-nur-gold-400);
+    stroke-width: 2.5;
+    stroke-dasharray: 100.53;
+    stroke-dashoffset: 100.53;
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    opacity: 0;
+  }
+
+  .slide-indicator.active .indicator-ring {
+    opacity: 1;
+    animation: indicator-fill 30s linear forwards;
+  }
+
+  @keyframes indicator-fill {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
 </style>
+
+<script>
+  const track = document.querySelector(".slideshow-track") as HTMLElement;
+  const slides = track?.querySelectorAll(".slideshow-slide");
+  const indicators = document.querySelectorAll(".slide-indicator");
+
+  function setActive(index: number) {
+    indicators.forEach((ind, i) => {
+      ind.classList.toggle("active", i === index);
+      // Re-trigger the CSS animation by cloning the SVG
+      const svg = ind.querySelector(".indicator-ring");
+      if (svg && i === index) {
+        const clone = svg.cloneNode(true);
+        svg.replaceWith(clone);
+      }
+    });
+  }
+
+  function goTo(index: number) {
+    current = index;
+    track.style.transform = `translateX(-${current * 100}%)`;
+    setActive(current);
+    resetTimer();
+  }
+
+  function resetTimer() {
+    clearInterval(timer);
+    timer = setInterval(() => {
+      current = (current + 1) % slides.length;
+      track.style.transform = `translateX(-${current * 100}%)`;
+      setActive(current);
+    }, 30_000);
+  }
+
+  let current = 0;
+  let timer: ReturnType<typeof setInterval>;
+
+  if (track && slides && slides.length > 1) {
+    indicators.forEach((ind, i) => {
+      ind.addEventListener("click", () => goTo(i));
+    });
+    setActive(0);
+    resetTimer();
+  }
+  // Reload page every 6h for fresh SSR data
+  setTimeout(() => location.reload(), 6 * 3600_000);
+</script>
