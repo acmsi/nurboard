@@ -8,10 +8,16 @@ import {
 
 const MAWAQIT_URL = Deno.env.get("MAWAQIT_URL") ??
   "https://mawaqit.net/fr/mosquee-nur-2610-saint-imier-switzerland";
+const MAWAQIT_MESSAGE_URL = Deno.env.get("MAWAQIT_MESSAGE_URL") ??
+  "https://mawaqit.net/en/messages/id/41189";
 const DASHBOARD_URL = Deno.env.get("DASHBOARD_URL") ??
   "http://localhost:3000";
 const TAB_ROTATION_SECS = parseInt(
   Deno.env.get("TAB_ROTATION_SECS") ?? "120",
+  10,
+);
+const MAWAQIT_MESSAGE_SECS = parseInt(
+  Deno.env.get("MAWAQIT_MESSAGE_SECS") ?? "45",
   10,
 );
 
@@ -19,15 +25,32 @@ interface ManagedTab {
   name: string;
   url: string;
   targetId: string | null;
+  durationSecs: number;
 }
 
 const managedTabs: ManagedTab[] = [
-  { name: "dashboard", url: DASHBOARD_URL, targetId: null },
-  { name: "mawaqit", url: MAWAQIT_URL, targetId: null },
+  {
+    name: "dashboard",
+    url: DASHBOARD_URL,
+    targetId: null,
+    durationSecs: TAB_ROTATION_SECS,
+  },
+  {
+    name: "mawaqit",
+    url: MAWAQIT_URL,
+    targetId: null,
+    durationSecs: TAB_ROTATION_SECS,
+  },
+  {
+    name: "mawaqit-message",
+    url: MAWAQIT_MESSAGE_URL,
+    targetId: null,
+    durationSecs: MAWAQIT_MESSAGE_SECS,
+  },
 ];
 
 let currentIndex = 0;
-let rotationInterval: ReturnType<typeof setInterval> | null = null;
+let rotationTimeout: ReturnType<typeof setTimeout> | null = null;
 let retryTimeout: ReturnType<typeof setTimeout> | null = null;
 let connected = false;
 
@@ -81,6 +104,13 @@ async function setupTabs(): Promise<void> {
   }
 }
 
+function scheduleNext(): void {
+  if (rotationTimeout) clearTimeout(rotationTimeout);
+  const current = managedTabs[currentIndex];
+  const delaySecs = current?.durationSecs ?? TAB_ROTATION_SECS;
+  rotationTimeout = setTimeout(rotate, delaySecs * 1000);
+}
+
 async function rotate(): Promise<void> {
   if (managedTabs.length === 0) return;
 
@@ -90,12 +120,15 @@ async function rotate(): Promise<void> {
   if (!tab.targetId) {
     console.log(`[tab-rotator] tab "${tab.name}" lost, re-setting up`);
     await setupTabs();
+    scheduleNext();
     return;
   }
 
   try {
     await activateTab(tab.targetId);
-    console.log(`[tab-rotator] switched to "${tab.name}"`);
+    console.log(
+      `[tab-rotator] switched to "${tab.name}" (${tab.durationSecs}s)`,
+    );
   } catch {
     console.log(
       `[tab-rotator] activate failed for "${tab.name}", re-setting up`,
@@ -103,6 +136,8 @@ async function rotate(): Promise<void> {
     tab.targetId = null;
     await setupTabs();
   }
+
+  scheduleNext();
 }
 
 export async function showTab(name: string): Promise<boolean> {
@@ -159,9 +194,9 @@ async function connectAndSetup(): Promise<void> {
 
   if (TAB_ROTATION_SECS > 0) {
     console.log(
-      `[tab-rotator] rotation every ${TAB_ROTATION_SECS}s`,
+      `[tab-rotator] rotation enabled (default ${TAB_ROTATION_SECS}s)`,
     );
-    rotationInterval = setInterval(rotate, TAB_ROTATION_SECS * 1000);
+    scheduleNext();
   } else {
     console.log("[tab-rotator] rotation disabled");
   }
@@ -173,9 +208,9 @@ export function startRotation(): void {
 }
 
 export function stopRotation(): void {
-  if (rotationInterval) {
-    clearInterval(rotationInterval);
-    rotationInterval = null;
+  if (rotationTimeout) {
+    clearTimeout(rotationTimeout);
+    rotationTimeout = null;
   }
   if (retryTimeout) {
     clearTimeout(retryTimeout);
