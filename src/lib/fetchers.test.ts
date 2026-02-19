@@ -116,12 +116,14 @@ Deno.test("donation: falls back to DEFAULTS when no cache", async () => {
     "fetch",
     () => Promise.reject(new Error("network down")),
   );
+  const errStub = stub(console, "error");
   try {
     const result = await fetchDonationData();
     assertEquals(result.isFallback, true);
     assertExists(result.data.objectif);
     assertEquals(result.data.montant_leve, 323_619); // hardcoded default
   } finally {
+    errStub.restore();
     fetchStub.restore();
   }
 });
@@ -146,12 +148,14 @@ Deno.test("donation: marks cached data stale after 24h", async () => {
       "fetch",
       () => Promise.reject(new Error("down")),
     );
+    const errStub = stub(console, "error");
     try {
       const result = await fetchDonationData();
       assertEquals(result.isStale, true);
       assertEquals(result.isFallback, false);
       assertEquals(result.data, fakeDonation);
     } finally {
+      errStub.restore();
       fetchStub.restore();
     }
   } finally {
@@ -185,11 +189,13 @@ Deno.test("membership: returns null when API fails and no cache", async () => {
     "fetch",
     () => Promise.reject(new Error("network down")),
   );
+  const errStub = stub(console, "error");
   try {
     const result = await fetchMembershipData();
     assertEquals(result.data, null);
     assertEquals(result.isFallback, true);
   } finally {
+    errStub.restore();
     fetchStub.restore();
   }
 });
@@ -214,12 +220,14 @@ Deno.test("membership: returns stale cached data when API fails after prior succ
       "fetch",
       () => Promise.reject(new Error("down")),
     );
+    const errStub = stub(console, "error");
     try {
       const result = await fetchMembershipData();
       assertEquals(result.data, fakeMembership);
       assertEquals(result.isStale, true);
       assertEquals(result.isFallback, false);
     } finally {
+      errStub.restore();
       fetchStub.restore();
     }
   } finally {
