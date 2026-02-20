@@ -539,6 +539,19 @@ const membershipPercent = membership
     setActive(0);
     resetTimer();
   }
+  // Reload Mawaqit iframe when tab becomes hidden (CDP tab switch)
+  // to work around memory/rendering issues in the widget
+  const mawaqitIframe = document.querySelector("aside iframe") as HTMLIFrameElement;
+  if (mawaqitIframe) {
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        const src = mawaqitIframe.src;
+        mawaqitIframe.src = "";
+        mawaqitIframe.src = src;
+      }
+    });
+  }
+
   // Reload page every 6h for fresh SSR data
   setTimeout(() => location.reload(), 6 * 3600_000);
 </script>
