@@ -80,6 +80,12 @@ sudo systemctl daemon-reload
 sudo systemctl enable nurboard.service nurboard-kiosk.service
 sudo systemctl restart nurboard.service nurboard-kiosk.service
 
+# ── Sudoers (passwordless kiosk restart) ─────────────────────────────
+info "Configuring sudoers for kiosk service management..."
+echo "$CURRENT_USER ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart nurboard-kiosk, /usr/bin/systemctl start nurboard-kiosk" \
+  | sudo tee /etc/sudoers.d/nurboard > /dev/null
+sudo chmod 0440 /etc/sudoers.d/nurboard
+
 # ── Chromium policies ─────────────────────────────────────────────
 info "Installing Chromium policies..."
 sudo mkdir -p /etc/chromium/policies/managed

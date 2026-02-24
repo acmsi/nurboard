@@ -7,7 +7,10 @@
       "Bash(deno lint:*)",
       "Bash(deno task build:*)",
       "WebFetch(domain:acmsi.ch)",
-      "Bash(deno task test:*)"
+      "Bash(deno task test:*)",
+      "Bash(pdftoppm:*)",
+      "Bash(pdftotext:*)",
+      "Bash(deno check:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

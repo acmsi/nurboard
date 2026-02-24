@@ -1,0 +1,26 @@
+{
+  "defaults": {
+    "fajr": 10,
+    "duhr": 0,
+    "asr": 0,
+    "maghrib": 0,
+    "isha": 0
+  },
+  "overrides": [
+    { "from": "2026-02-19", "to": "2026-02-28", "isha": "20:10" },
+    { "from": "2026-03-01", "to": "2026-03-10", "isha": "20:20" },
+    { "from": "2026-03-11", "to": "2026-03-19", "isha": "20:30" }
+  ],
+  "jumma": {
+    "start": "12:15",
+    "end": "12:45"
+  },
+  "estimatedDurations": {
+    "fajr": 15,
+    "duhr": 20,
+    "asr": 15,
+    "maghrib": 10,
+    "isha": 20,
+    "jumma": 30
+  }
+}
